@@ -13,20 +13,19 @@ concrete MicroLangSweAli of MicroLang = open MicroResSweAli,  Prelude  in {
     AP  = Adjective ;
     NP = {s : Case => Str ; n : Number ; g : Gender ; d : Defeniteness }; -- = {s : Case => Str ; a : Agreement} ;
     Pron =  {s : Case => Str ; n : Number ; g : Gender ; d : Defeniteness };
-    Det  = {s :Gender => Str ; n : Number ; d : Defeniteness};
+    Det  = {s :Bool => Gender => Str ; n : Number ; d : Defeniteness};
     Prep = {s : Str} ;
     V =  Verb ;
-   V2  = Verb2 ;
-   A = Adjective ;
+    V2  = Verb2 ;
+    A = Adjective ;
     Adv   = {s : Str} ;
-    --  = {s : Str} ;
-      CN = Noun ;
+    CN = Noun ** {fAdj: Bool};
     N = Noun ;
 
 
   lin
     UttS s = s ;
-    UseN n = n ;
+    UseN n = n ** {fAdj = False} ;
 
     UttNP np = {s = np.s ! Acc } ;
 
@@ -62,21 +61,22 @@ concrete MicroLangSweAli of MicroLang = open MicroResSweAli,  Prelude  in {
     CompAP ap = {s = \\n,g,d => ap.s ! n ! g ! d } ;
 
     DetCN det cn = {
-    s = \\c => det.s ! cn.g ++ cn.s ! det.n ! det.d ;
+    s = \\c => det.s ! cn.fAdj ! cn.g ++ cn.s ! det.n ! det.d ;
     n = det.n ;
     d = det.d ;
     g = cn.g } ;
 
 
+a_Det = {s = \\_ => table {Ut => "en" ; Neu => "ett"} ; n = Sg ; d = Indef} ;
+the_Det = {s = table {False  => \\_ => "" ; True => table {Ut => "den" ; Neu => "det"} } ; n = Sg ; d = Def } ;
+aPl_Det = {s = \\_,_ => "" ; n = Pl ; d = Indef} ;
+thePl_Det = {s = table {False => \\_ => "" ; True => \\_ => "de"} ; n = Pl ; d = Def} ;
 
-    a_Det =  {s = table { Neu => "ett" ; Ut => "en" } ; n = Sg ; d = Indef } ;
-    the_Det = {s = table { Ut => "" ; Neu => "" } ; n = Sg ; d = Def } ;
-    aPl_Det = {s = table { Ut => "" ; Neu => "" } ; n = Pl ; d = Def } ;
-   thePl_Det = {s = table { Ut => "" ; Neu => "" } ; n = Pl ; d = Indef } ;
 
     AdjCN ap cn = {
       s = \\n,c =>  ap.s ! n ! cn.g ! c ++ cn.s ! n ! c  ;
       g = cn.g ;
+      fAdj = True ;
     };
 
     PositA a = a ;
@@ -88,10 +88,8 @@ concrete MicroLangSweAli of MicroLang = open MicroResSweAli,  Prelude  in {
 
     he_Pron = {
     s = table { Nom => "han" ; Acc => "honom"}; n = Sg ; g = Ut ; d = Indef } ;
-
     she_Pron = {
     s = table {Nom => "hon" ; Acc => "henne" } ; n = Sg ; g = Ut ;d =  Indef }  ;
-
     they_Pron = {
     s = table {Nom => "de" ; Acc => "de" }; n = Pl ; g = Neu ; d = Indef};
 
@@ -102,7 +100,7 @@ concrete MicroLangSweAli of MicroLang = open MicroResSweAli,  Prelude  in {
 
 lin apple_N = mkN "äpple" "äpplen" ;
 lin animal_N = mkN "djur" ;
---lin baby_N = mkN "baby" ;
+lin baby_N = mkN "barn" "barn" ;
 lin bad_A = mkA "dålig" ;
 lin beer_N = mkN "öl" "öl" ;
 lin big_A = mkA "stor"  ;
@@ -127,12 +125,12 @@ lin cloud_N = mkN "moln" "moln"  ;
 lin cold_A = mkA "kall" ;
 lin come_V = mkV "kommer" "kom" "kommit" ;
 lin computer_N = mkN "dator"  ;
-lin cow_N = mkN "ko" "kor" ;
+lin cow_N = mkN "ko";
 lin dirty_A = mkA "smutsig" ;
 lin dog_N = mkN "hund"  ;
 lin drink_V2 = mkV2 (mkV "drycker" "drack" "druckit") ;
 lin eat_V2 = mkV2 (mkV "äter" "åt" "ätit") ;
-lin find_V2 = mkV2 (mkV "hitter" "hittade" "hittat") ;
+lin find_V2 = mkV2 (mkV "hittar" "hittade" "hittat") ;
 lin fire_N = mkN "bränd" "bränder" ;
 lin fish_N = mkN "fisk" ;
 lin flower_N = mkN "blomma" ;
@@ -179,9 +177,9 @@ lin train_N = mkN "tåg" "tågen" ;
 lin travel_V = mkV "reser" ;
 lin tree_N = mkN "träd" "träd" ;
 lin understand_V2 = mkV2 (mkV "förstår" "förstod" "förstått") ;
-lin wait_V2 = mkV2 "vänta" "på" ;
+lin wait_V2 = mkV2 "väntar" "på" ;
 lin walk_V = mkV "går" "gick" "gått" ;
-lin warm_A = mkA "varmt" ;
+lin warm_A = mkA "varm" ;
 lin water_N = mkN "vatten" ;
 lin white_A = mkA "vit" ;
 lin wine_N = mkN "vin" ;

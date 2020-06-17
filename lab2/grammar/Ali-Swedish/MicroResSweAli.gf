@@ -26,8 +26,8 @@ oper
                                                                  g = taGender sgIndef }  ;
 taGender : Str -> Gender
  = \sg -> case sg of {
-      x + ("el"|"a"|"t"|"r"|"än"|"nd"|"ke"|"re"|"o") => Ut ; -- en
-      x + ("v"|"in"|"en"|"öd"|"od"|"åk"|"g"|"ln"|"äd"|"le"|"rn") => Neu ; --ett
+      x + ("el"|"a"|"t"|"r"|"än"|"nd"|"ke"|"re"|"o"|"od"|"ad") => Ut ; -- en
+      x + ("v"|"in"|"en"|"öd"|"åk"|"g"|"ln"|"äd"|"le"|"rn") => Neu ; --ett
       _ => Neu
 
 } ;
@@ -49,9 +49,9 @@ smartN : Str -> Noun
 
 irregN : (sgIndef, plindef : Str) ->  Noun
 = \ sgIndef, plIndef -> case sgIndef of {
-  x + ("ln"|"g"|"åk"|"äd")  => regN sgIndef (sgIndef + "et") plIndef (sgIndef + "en"); -- moln,träd, språk,tåg -- ett
+  x + ("ln"|"g"|"åk"|"äd"|"s"|"rn")  => regN sgIndef (sgIndef + "et") plIndef (sgIndef + "en"); -- moln,träd, språk,tåg -- ett
   x + "e"  => regN sgIndef (sgIndef + "t") plIndef (sgIndef + "n");  -- äpple
-    x + ("öd"|"n") => regN sgIndef (sgIndef + "et") plIndef sgIndef ; -- bröd
+    x + ("öd") => regN sgIndef (sgIndef + "et") plIndef sgIndef ; -- bröd
 
   x + ("lk"|"ik"|"an") =>   regN sgIndef (sgIndef + "en") plIndef (plIndef + "arna") ; -- mjölk , musik, män
   x + ("od") =>   regN sgIndef (sgIndef + "en") plIndef (plIndef + "arna") ; --blod
@@ -64,27 +64,24 @@ irregN : (sgIndef, plindef : Str) ->  Noun
   Adjective : Type = {s : Number => Gender => Defeniteness => Str } ;
 
 
-regA : (sgUtIndef,sgUtDef, sgNeuIndef, sgNeuDef, plUtDef, plUtIndef, plNeuDef, plNeuIndef : Str ) ->  Adjective
-   =\ sgUtDef, sgUtIndef, sgNeuDef, sgNeuIndef, plUtDef, plUtIndef, plNeuDef, plNeuIndef -> {s = table
+regA : (sgUtIndef,sgNeuIndef,a_end : Str ) ->  Adjective
+   =\  sgUtIndef,sgNeuIndef,a_end -> {s = table
 
-   { Sg => table { Neu => table { Def => sgUtDef ;
-                                 Indef => sgUtIndef } ;
+   { Sg => table { Neu => table { Def => a_end ;
+                                 Indef => sgNeuIndef} ;
 
-                  Ut  => table { Def =>  sgNeuDef ;
-                                  Indef => sgNeuIndef} }  ;
+                  Ut  => table { Def =>  a_end ;
+                                  Indef => sgUtIndef} }  ;
 
-    Pl => table { Neu => table { Def => plUtDef ;
-                                Indef => plUtIndef} ;
+    Pl =>\\_,_ => a_end }};
 
-                  Ut => table { Def => plNeuDef ;
-                                 Indef => plNeuIndef} } } } ;
 
 smartA : Str -> Adjective
   =\ sg -> case sg of {
-  gamm + "al" => regA (gamm + "la") (gamm + "t") (gamm + "la") sg (gamm + "la") (gamm + "la") (gamm + "la") (gamm + "la");
-  bl + ("å"|"a") => regA sg  (bl + "tt")  sg  sg sg  sg sg sg ;
-  rö + "d" => regA sg  (rö + "tt")  (rö +"a")  (rö +"a") (rö +"a") (rö +"a")  (rö +"a") (rö +"a") ;
-  _ =>  regA (sg + "a") (sg + "t") (sg + "a") sg (sg + "a") (sg + "a") (sg + "a") (sg + "a") } ;
+  gamm + "al" => regA sg (sg + "t") (gamm + "la") ;
+  bl + ("å"|"a") => regA sg  (bl + "tt")  sg ;
+  rö + "d" => regA sg  (rö + "tt")  (rö +"a")  ;
+  _ =>  regA sg (sg + "t") (sg + "a") } ;
 
 
 Verb : Type = {s : VForm => Str} ;
